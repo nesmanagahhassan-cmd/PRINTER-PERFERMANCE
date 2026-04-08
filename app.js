@@ -34,26 +34,66 @@ captureBtn.addEventListener('click', () => {
 
 // 3. تحليل الصورة باستخدام Tesseract.js
 async function analyzeImage(image) {
-    const result = await Tesseract.recognize(image, 'eng');
-    const text = result.data.text.toLowerCase();
+    const reportSection = document.getElementById('report-section');
+    const modelSpan = document.getElementById('model-name');
+    const errorSpan = document.getElementById('error-desc');
     
-    // منطق بسيط للذكاء الاصطناعي (يمكن استبداله بـ OpenAI API أو TensorFlow)
-    let model = "غير معروف";
-    let error = "لم يتم تحديد المشكلة بدقة";
-    let steps = ["تأكد من توصيل الكابلات", "أعد تشغيل الطابعة"];
+    modelSpan.innerText = "جاري القراءة...";
+    
+    try {
+        // البدء بالتعرف على النص
+        const result = await Tesseract.recognize(image, 'eng', {
+            logger: m => console.log(m) // لمراقبة التقدم في الـ Console
+        });
 
-    if(text.includes("hp")) model = "HP Laserjet";
-    if(text.includes("canon")) model = "Canon Pixma";
-    
-    if(text.includes("jam") || text.includes("paper")) {
-        error = "حشر ورق (Paper Jam)";
-        steps = ["افتح الباب الخلفي", "اسحب الورقة ببطء", "تأكد من درج الورق"];
-    } else if(text.includes("ink") || text.includes("toner")) {
-        error = "نفاد الحبر (Low Ink)";
-        steps = ["افتح غطاء الحبر", "استبدل الكارتريدج", "نظف رؤوس الطباعة"];
+        const fullText = result.data.text.toLowerCase();
+        console.log("النص المستخرج: ", fullText); // سيظهر لك في المتصفح ماذا قرأ فعلياً
+
+        // مصفوفات للكلمات الدلالية (Keywords) لزيادة دقة التوقع
+        const brandKeywords = {
+            'HP LaserJet': ['hp', 'laserjet', 'hewlett', 'p1102', 'm15w', 'p2035'],
+            'Canon Pixma': ['canon', 'pixma', 'g3411', 'mg2540', 'ts3140'],
+            'Epson EcoTank': ['epson', 'ecotank', 'l3150', 'l3110'],
+            'Brother': ['brother', 'dcp', 'mfc']
+        };
+
+        const errorKeywords = {
+            'حشر ورق (Paper Jam)': ['jam', 'paper', 'path', 'blocked', 'e03', 'e3'],
+            'نفاد الحبر أو التونر': ['ink', 'toner', 'cartridge', 'empty', 'low', 'e01', 'level'],
+            'خطأ في التعريف / الاتصال': ['offline', 'driver', 'connection', 'usb', 'wifi'],
+            'مشكلة في الماسح الضوئي': ['scanner', 'scan', 'copy', 'flatbed']
+        };
+
+        let detectedModel = "موديل غير معروف - يرجى تقريب الكاميرا";
+        let detectedError = "لم يتم تحديد المشكلة - حاول تصوير رسالة الخطأ بوضوح";
+        let steps = ["تأكد من إضاءة الغرفة", "قرب الكاميرا من ملصق الموديل أو شاشة الخطأ", "أعد المحاولة"];
+
+        // البحث عن الموديل بطريقة مرنة
+        for (let [brand, keys] of Object.entries(brandKeywords)) {
+            if (keys.some(key => fullText.includes(key))) {
+                detectedModel = brand;
+                break;
+            }
+        }
+
+        // البحث عن الخطأ بطريقة مرنة
+        for (let [errorName, keys] of Object.entries(errorKeywords)) {
+            if (keys.some(key => fullText.includes(key))) {
+                detectedError = errorName;
+                // تعيين خطوات حل مخصصة بناءً على الخطأ
+                if (errorName.includes('حشر')) steps = ["افتح غطاء الطابعة", "اسحب الورقة العالقة برفق", "تأكد من نظافة المسار"];
+                if (errorName.includes('الحبر')) steps = ["تأكد من مستوى الحبر", "هز عبوة الحبر برفق", "استبدل العبوة الفارغة"];
+                break;
+            }
+        }
+
+        // عرض النتائج
+        displayReport(detectedModel, detectedError, steps);
+
+    } catch (error) {
+        console.error("خطأ في التحليل:", error);
+        modelSpan.innerText = "خطأ في الاتصال بالذكاء الاصطناعي";
     }
-
-    displayReport(model, error, steps);
 }
 
 // 4. عرض التقرير
