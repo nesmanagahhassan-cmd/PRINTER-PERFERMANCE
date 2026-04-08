@@ -71,3 +71,30 @@ main {
     margin-bottom: 20px;
     border: 1px dashed #bbb;
 }
+
+.camera-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: auto;
+}
+
+/* إطار التركيز في وسط الكاميرا */
+.focus-bracket {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 150px;
+    border: 2px dashed #4a90e2;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5); /* تظليل ما حول الإطار */
+    pointer-events: none;
+    z-index: 10;
+}
+
+.status-msg {
+    color: #4a90e2;
+    font-weight: bold;
+    margin: 10px 0;
+}
