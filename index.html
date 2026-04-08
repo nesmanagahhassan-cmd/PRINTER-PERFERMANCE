@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مصلح الطابعات الذكي</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- مكتبة التعرف على النصوص -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <!-- مكتبات Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js"></script>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">🖨️ فني الطابعات</div>
+        <div id="user-info"></div>
+    </nav>
+
+    <main>
+        <!-- قسم الإعلانات العلوي -->
+        <div class="ads-container">
+            <p>مساحة إعلانية (Google AdSense)</p>
+        </div>
+
+        <section id="home">
+            <h1>شخّص عطل طابعتك بثوانٍ</h1>
+            <p>استخدم الكاميرا لتحديد المشكلة والحصول على الحل فوراً.</p>
+            <button id="start-camera" class="btn-main">📸 تشخيص بالكاميرا</button>
+        </section>
+
+        <!-- نافذة الكاميرا -->
+        <section id="camera-section" class="hidden">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas" class="hidden"></canvas>
+            <button id="capture" class="btn-snap">التقاط وتحليل</button>
+        </section>
+
+        <!-- قسم التقرير -->
+        <section id="report-section" class="hidden">
+            <div class="report-card">
+                <h2>📋 تقرير التشخيص</h2>
+                <p><strong>الموديل:</strong> <span id="model-name">جاري التحديد...</span></p>
+                <p><strong>المشكلة:</strong> <span id="error-desc">جاري التحليل...</span></p>
+                <div id="solution-steps">
+                    <h3>🛠️ خطوات الحل:</h3>
+                    <ul id="steps-list"></ul>
+                </div>
+                <a id="youtube-link" target="_blank" class="btn-yt">📺 شاهد الحل على يوتيوب</a>
+                <button onclick="location.reload()" class="btn-back">تشخيص جديد</button>
+            </div>
+        </section>
+
+        <!-- سجل الأعطال -->
+        <section id="history">
+            <h3>🕒 السجل السابق</h3>
+            <div id="history-list"></div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
